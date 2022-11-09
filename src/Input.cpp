@@ -12,18 +12,10 @@ int32_t RotaryEncoder::read()
 {
     int current_state = digitalRead(m_pin1);
     int32_t value = 0;
+    
     if (current_state != m_prev_state)
-    {
-        //delay(10);
-        if (digitalRead(m_pin2) != current_state)
-        {
-            value = -1;
-        }
-        else
-        {
-            value = 1;
-        }
-    }
+        value = (digitalRead(m_pin2) != current_state) ? -1 : 1;
+    
     m_prev_state = current_state;
     return value;
 }
