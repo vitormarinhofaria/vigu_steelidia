@@ -12,23 +12,13 @@ enum InputSelecting
     DIAMETRO,
     INCREMENTO,
 
-    SELECT_COUNT
+SELECT_COUNT
 };
-InputSelecting operator+(InputSelecting& s, int s2){
-    int en = static_cast<int>(s);
-    en += s2;
-    if(en >= SELECT_COUNT){
-        en = 0;
-    }
-    return static_cast<InputSelecting>(en);
-}
-InputSelecting operator++(InputSelecting&s){
-    return  s + 1;
-}
-InputSelecting operator+=(InputSelecting&s, int i){
-    return s + i;
-}
+InputSelecting operator+(InputSelecting& s, int s2);
+InputSelecting operator++(InputSelecting&s);
+InputSelecting operator+=(InputSelecting&s, int i);
 
+const char* InputSelecting_to_string(const InputSelecting input_selecting);
 class Interface
 {
 
