@@ -16,8 +16,13 @@ public:
     InputSelecting m_select_position = InputSelecting::MATERIAL;
     const char* m_select_position_text = InputSelecting_to_string(m_select_position);
 
+    int m_prev_rotary_val = 0;
+
+    int m_material = 0;
+
     int m_diameter = 10;
     int m_prev_diameter = m_diameter;
+
     int m_increment = 1;
     int m_prev_increment = m_increment;
     
