@@ -5,6 +5,7 @@
 #include "Interface.h"
 #include "RpmReader.h"
 #include "State.h"
+#include "Material.h"
 
 U8GLIB_ST7920_128X64_4X u8g(23, 17, 16); // Pinos do Display
 
@@ -58,7 +59,7 @@ void loop(void)
         }
         case InputSelecting::MATERIAL:
         {
-            g_state.m_input_manager.set_rotary_val(0);
+            g_state.m_input_manager.set_rotary_val(g_state.m_material);
             break;
         }
         default:
@@ -115,6 +116,20 @@ void loop(void)
     }
     case InputSelecting::MATERIAL:
     {
+        auto val = g_state.m_input_manager.get_rotary_val();
+        if (val != 0)
+        {
+            if (val > g_state.m_prev_rotary_val)
+            {
+                g_state.m_material = material_inc_indx(g_state.m_material);
+            }
+            else if (val < g_state.m_prev_rotary_val)
+            {
+                g_state.m_material = material_dec_indx(g_state.m_material);
+            }
+        }
+        g_state.m_prev_rotary_val = val;
+        Serial.write(String("mat index: " + String(g_state.m_material) + "\r").c_str());
         break;
     }
     default:
@@ -122,14 +137,20 @@ void loop(void)
     }
 
     // Preparar as variavéis para mostrar no display
-    String s_material = String("Valor: " + String(g_state.m_input_manager.get_rotary_val()));
+    String s_material = String(material_get(g_state.m_material).m_name);
     String s_diametro = String(g_state.m_diameter);
     String s_incremento = String(g_state.m_increment);
     String s_rpm = String(String(g_state.m_rpm_reader.get(), 1) + " RPM");
+    String s_avanco_rpm = String(String(material_get(g_state.m_material).CalculateRpmAcabamentoHss(g_state.m_rpm_reader.get(), g_state.m_diameter)) + " RPM");
+    MatEntry mat = material_get(g_state.m_material);
+    String s_hss_desbaste = String(mat.desbaste_hss);
+    String s_hss_acabamento = String(mat.acabamento_hss);
+    String s_widia_desbaste = String(mat.desbaste_widia);
+    String s_widia_acabamento = String(mat.acabamento_widia);
+
     u8g.firstPage();
     do
     {
-
         int header_h = 12;
         int select_h = 0;
 
@@ -171,10 +192,36 @@ void loop(void)
 
         u8g.drawStr(0, 10, s_material.c_str());
 
-        u8g.setFont(u8g_font_4x6);
-        u8g.drawStr(0, 34, s_rpm.c_str());
+        { // RPM READING
+            u8g.setFont(u8g_font_4x6);
+            u8g.drawStr(23, 20, "MOTOR");
+            u8g.drawStr(10, 30, s_rpm.c_str());
+            u8g.drawLine(0, 32, (WIDTH / 2), 32);
+        }
+        { // RPM AVANÇO
+            u8g.setFont(u8g_font_4x6);
+            u8g.drawStr((WIDTH / 2) + 20, 20, "AVANCO");
+            u8g.drawStr((WIDTH / 2) + 10, 30, s_avanco_rpm.c_str());
+            u8g.drawLine((WIDTH / 2), 32, WIDTH, 32);
+        }
+        { // HSS
+            u8g.setFont(u8g_font_4x6);
+            u8g.drawStr(25, 40, "HSS");
+            u8g.drawStr(5, 50, "DESB.");
+            u8g.drawStr(5, 60, s_hss_desbaste.c_str());
+            u8g.drawStr(30, 50, "ACAB.");
+            u8g.drawStr(30, 60, s_hss_acabamento.c_str());
+        }
+        { // WIDIA
+            u8g.setFont(u8g_font_4x6);
+            u8g.drawStr((WIDTH / 2) + 20, 40, "WIDIA");
+            u8g.drawStr((WIDTH / 2) + 5, 50, "DESB.");
+            u8g.drawStr((WIDTH / 2) + 5, 60, s_widia_desbaste.c_str());
+            u8g.drawStr((WIDTH / 2) + 30, 50, "ACAB.");
+            u8g.drawStr((WIDTH / 2) + 30, 60, s_widia_acabamento.c_str());
+        }
 
-        u8g.drawStr(0, HEIGHT - 2, g_state.m_select_position_text);
+        //u8g.drawStr(0, HEIGHT - 2, g_state.m_select_position_text);
 
         g_state.m_input_manager.update();
     } while (u8g.nextPage());
