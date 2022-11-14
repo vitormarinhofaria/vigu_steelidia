@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "RpmReader.h"
-#include "CircularAvarage.h"
 
 static volatile int g_pulse_counter = 0;
 static volatile float g_rpm = 0;
