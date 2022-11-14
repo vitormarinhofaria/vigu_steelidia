@@ -50,26 +50,24 @@ void loop(void)
     if (btn_clicked && !btn_is_hold)
     {
         select_position = select_position + 1;
+        s_selecting = InputSelecting_to_string(select_position);
         switch (select_position)
         {
         case InputSelecting::DIAMETRO:
         {
             input.set_rotary_val(diametro);
             prev_diametro = diametro;
-            s_selecting = String("Diametro");
             break;
         }
         case InputSelecting::INCREMENTO:
         {
             input.set_rotary_val(incremento);
             prev_increment_val = incremento;
-            s_selecting = String("Incremento");
             break;
         }
         case InputSelecting::MATERIAL:
         {
             input.set_rotary_val(0);
-            s_selecting = String("Material");
             break;
         }
         default:
