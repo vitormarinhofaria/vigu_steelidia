@@ -4,6 +4,7 @@
 #include "InputeManager.h"
 #include "Interface.h"
 #include "RpmReader.h"
+#include "State.h"
 
 U8GLIB_ST7920_128X64_4X u8g(23, 17, 16); // Pinos do Display
 
@@ -14,9 +15,7 @@ volatile bool pinState = 1;
 #define ENC_CLK_PIN 33   // Pino 1 do Encoder
 #define ENC_DT_PIN 31    // Pino 2 do Encoder
 
-InputManager input = InputManager(RotaryEncoder(33, 31), 2, Button(35));
-Interface interface;
-RpmReader rpm_reader = RpmReader(21, 1);
+State g_state;
 
 void setup(void)
 {
@@ -32,94 +31,86 @@ void setup(void)
 #endif
 }
 
-int diametro = 10;
-int prev_diametro = diametro;
-int incremento = 1;
-int prev_increment_val = incremento;
-InputSelecting select_position = InputSelecting::MATERIAL;
-bool btn_is_hold = false;
-int counter = 0;
-String s_selecting = "Material";
 void loop(void)
 {
     // atualizar input
-    input.update();
-    bool btn_clicked = input.get_btn_clicked();
+    g_state.m_input_manager.update();
+    bool btn_clicked = g_state.m_input_manager.get_btn_clicked();
     digitalWrite(13, btn_clicked);
 
-    if (btn_clicked && !btn_is_hold)
+    if (btn_clicked && !g_state.m_btn_hold)
     {
-        select_position = InputSelecting_increment(select_position);
-        s_selecting = InputSelecting_to_string(select_position);
-        switch (select_position)
+        g_state.m_select_position = InputSelecting_increment(g_state.m_select_position);
+        g_state.m_select_position_text = InputSelecting_to_string(g_state.m_select_position);
+        switch (g_state.m_select_position)
         {
         case InputSelecting::DIAMETRO:
         {
-            input.set_rotary_val(diametro);
-            prev_diametro = diametro;
+            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
+            g_state.m_prev_diameter = g_state.m_diameter;
             break;
         }
         case InputSelecting::INCREMENTO:
         {
-            input.set_rotary_val(incremento);
-            prev_increment_val = incremento;
+            g_state.m_input_manager.set_rotary_val(g_state.m_increment);
+            g_state.m_prev_increment = g_state.m_increment;
             break;
         }
         case InputSelecting::MATERIAL:
         {
-            input.set_rotary_val(0);
+            g_state.m_input_manager.set_rotary_val(0);
             break;
         }
         default:
             break;
         }
 
-        btn_is_hold = true;
+        g_state.m_btn_hold = true;
     }
-    switch (select_position)
+    switch (g_state.m_select_position)
     {
     case InputSelecting::DIAMETRO:
     {
-        auto val = input.get_rotary_val();
-        diametro += (val - prev_diametro) * incremento;
-        prev_diametro = val;
-        if (diametro > 350)
+        auto val = g_state.m_input_manager.get_rotary_val();
+        g_state.m_diameter += (val - g_state.m_prev_diameter) * g_state.m_increment;
+        g_state.m_prev_diameter = val;
+        if (g_state.m_diameter > 350)
         {
-            diametro = 350;
-            input.set_rotary_val(diametro);
-            prev_diametro = diametro;
+            g_state.m_diameter = 350;
+            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
+            g_state.m_prev_diameter = g_state.m_diameter;
         }
-        else if (diametro < 10)
+        else if (g_state.m_diameter < 10)
         {
-            diametro = 10;
-            input.set_rotary_val(diametro);
-            prev_diametro = diametro;
+            g_state.m_diameter = 10;
+            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
+            g_state.m_prev_diameter = g_state.m_diameter;
         }
         break;
     }
     case InputSelecting::INCREMENTO:
     {
-        auto val = input.get_rotary_val();
+        auto val = g_state.m_input_manager.get_rotary_val();
         if (val != 0)
         {
-            if (val > prev_increment_val)
+            if (val > g_state.m_prev_increment)
             {
-                incremento *= 10;
+                g_state.m_increment *= 10;
             }
-            else if (val < prev_increment_val)
+            else if (val < g_state.m_prev_increment)
             {
-                incremento /= 10;
+                g_state.m_increment /= 10;
             }
         }
-        if (incremento <= 0)
+        if (g_state.m_increment <= 0)
         {
-            incremento = 1;
+            g_state.m_increment = 1;
         }
-        if (incremento > 100)
+        if (g_state.m_increment > 100)
         {
-            incremento = 100;
+            g_state.m_increment = 100;
         }
-        prev_increment_val = val;
+        g_state.m_prev_increment = val;
         break;
     }
     case InputSelecting::MATERIAL:
@@ -131,10 +122,10 @@ void loop(void)
     }
 
     // Preparar as variavéis para mostrar no display
-    String s_material = String("Valor: " + String(input.get_rotary_val()));
-    String s_diametro = String(diametro);
-    String s_incremento = String(incremento);
-    String s_rpm = String(String(rpm_reader.get(), 1) + " RPM");
+    String s_material = String("Valor: " + String(g_state.m_input_manager.get_rotary_val()));
+    String s_diametro = String(g_state.m_diameter);
+    String s_incremento = String(g_state.m_increment);
+    String s_rpm = String(String(g_state.m_rpm_reader.get(), 1) + " RPM");
     u8g.firstPage();
     do
     {
@@ -142,12 +133,12 @@ void loop(void)
         int header_h = 12;
         int select_h = 0;
 
-        interface.drawCenter(u8g);
+        g_state.m_interface.drawCenter(u8g);
 
         u8g.drawLine((WIDTH / 4) * 3, 0, (WIDTH / 4) * 3, header_h);
         u8g.drawLine(0, header_h, WIDTH, header_h);
 
-        switch (select_position)
+        switch (g_state.m_select_position)
         {
         case InputSelecting::MATERIAL:
         {
@@ -183,16 +174,15 @@ void loop(void)
         u8g.setFont(u8g_font_4x6);
         u8g.drawStr(0, 34, s_rpm.c_str());
 
-        u8g.drawStr(0, HEIGHT - 10, s_selecting.c_str());
+        u8g.drawStr(0, HEIGHT - 2, g_state.m_select_position_text);
 
-        input.update();
+        g_state.m_input_manager.update();
     } while (u8g.nextPage());
 
-    input.update();
-    counter++;
+    g_state.m_input_manager.update();
 
     if (!btn_clicked)
     {
-        btn_is_hold = false;
+        g_state.m_btn_hold = false;
     }
 }
