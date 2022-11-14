@@ -110,3 +110,14 @@ const int MatEntry::CalculateRpmAcabamentoWidia(float rpm, int diameter)
 {
     return (acabamento_widia * g_CALC_CONST) / (diameter * g_PI);
 }
+
+TOOL_OPER TOOL_OPER_inc(const TOOL_OPER op)
+{
+    int en = static_cast<int>(op);
+    en++;
+    if (en >= TOOL_OPER::TOOL_OPER_COUNT)
+    {
+        en = 0;
+    }
+    return static_cast<TOOL_OPER>(en);
+}

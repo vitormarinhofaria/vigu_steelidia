@@ -129,9 +129,44 @@ void loop(void)
             }
         }
         g_state.m_prev_rotary_val = val;
-        Serial.write(String("mat index: " + String(g_state.m_material) + "\r").c_str());
         break;
     }
+    default:
+        break;
+    }
+
+    //
+    if (g_state.m_btn_stop.read() && !g_state.m_btn_stop_hold)
+    {
+        g_state.m_tool_operation = TOOL_OPER_inc(g_state.m_tool_operation);
+        g_state.m_btn_stop_hold = true;
+        Serial.write("BTN STOP PRESSED");
+    }
+    MatEntry current_mat = material_get(g_state.m_material);
+    int avanco_rpm = 0;
+    switch (g_state.m_tool_operation)
+    {
+    case TOOL_OPER::HSS_DESB:
+    {
+        avanco_rpm = current_mat.CalculateRpmDesbasteHss(g_state.m_rpm_reader.get(), g_state.m_diameter);
+        break;
+    }
+    case TOOL_OPER::HSS_ACAB:
+    {
+        avanco_rpm = current_mat.CalculateRpmAcabamentoHss(g_state.m_rpm_reader.get(), g_state.m_diameter);
+        break;
+    }
+    case TOOL_OPER::WIDIA_DESB:
+    {
+        avanco_rpm = current_mat.CalculateRpmDesbasteWidia(g_state.m_rpm_reader.get(), g_state.m_diameter);
+        break;
+    }
+    case TOOL_OPER::WIDIA_ACAB:
+    {
+        avanco_rpm = current_mat.CalculateRpmAcabamentoWidia(g_state.m_rpm_reader.get(), g_state.m_diameter);
+        break;
+    }
+
     default:
         break;
     }
@@ -141,12 +176,12 @@ void loop(void)
     String s_diametro = String(g_state.m_diameter);
     String s_incremento = String(g_state.m_increment);
     String s_rpm = String(String(g_state.m_rpm_reader.get(), 1) + " RPM");
-    String s_avanco_rpm = String(String(material_get(g_state.m_material).CalculateRpmAcabamentoHss(g_state.m_rpm_reader.get(), g_state.m_diameter)) + " RPM");
-    MatEntry mat = material_get(g_state.m_material);
-    String s_hss_desbaste = String(mat.desbaste_hss);
-    String s_hss_acabamento = String(mat.acabamento_hss);
-    String s_widia_desbaste = String(mat.desbaste_widia);
-    String s_widia_acabamento = String(mat.acabamento_widia);
+    String s_avanco_rpm = String(String(avanco_rpm) + " RPM");
+
+    String s_hss_desbaste = String(current_mat.desbaste_hss);
+    String s_hss_acabamento = String(current_mat.acabamento_hss);
+    String s_widia_desbaste = String(current_mat.desbaste_widia);
+    String s_widia_acabamento = String(current_mat.acabamento_widia);
 
     u8g.firstPage();
     do
@@ -209,19 +244,25 @@ void loop(void)
             u8g.drawStr(25, 40, "HSS");
             u8g.drawStr(5, 50, "DESB.");
             u8g.drawStr(5, 60, s_hss_desbaste.c_str());
-            u8g.drawStr(30, 50, "ACAB.");
-            u8g.drawStr(30, 60, s_hss_acabamento.c_str());
+            u8g.drawStr(((WIDTH / 4) * 1) + 5, 50, "ACAB.");
+            u8g.drawStr(((WIDTH / 4) * 1) + 5, 60, s_hss_acabamento.c_str());
         }
         { // WIDIA
             u8g.setFont(u8g_font_4x6);
             u8g.drawStr((WIDTH / 2) + 20, 40, "WIDIA");
             u8g.drawStr((WIDTH / 2) + 5, 50, "DESB.");
             u8g.drawStr((WIDTH / 2) + 5, 60, s_widia_desbaste.c_str());
-            u8g.drawStr((WIDTH / 2) + 30, 50, "ACAB.");
-            u8g.drawStr((WIDTH / 2) + 30, 60, s_widia_acabamento.c_str());
+            u8g.drawStr(((WIDTH / 4) * 3) + 5, 50, "ACAB.");
+            u8g.drawStr(((WIDTH / 4) * 3) + 5, 60, s_widia_acabamento.c_str());
         }
 
-        //u8g.drawStr(0, HEIGHT - 2, g_state.m_select_position_text);
+        { // TOOL OP selection line
+            int height_x = HEIGHT - 2;
+            int height_y = HEIGHT - 2;
+            int w_x = (WIDTH / 4) * (g_state.m_tool_operation);
+            int w_y = (WIDTH / 4) * (g_state.m_tool_operation + 1);
+            u8g.drawLine(w_x, height_x, w_y, height_y);
+        }
 
         g_state.m_input_manager.update();
     } while (u8g.nextPage());
@@ -231,5 +272,9 @@ void loop(void)
     if (!btn_clicked)
     {
         g_state.m_btn_hold = false;
+    }
+    if (!g_state.m_btn_stop.read())
+    {
+        g_state.m_btn_stop_hold = false;
     }
 }

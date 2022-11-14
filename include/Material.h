@@ -1,12 +1,24 @@
 #pragma once
 
-enum Tool{
+enum Tool
+{
     HSS,
     WIDIA
 };
+enum TOOL_OPER
+{
+    HSS_DESB,
+    HSS_ACAB,
+    WIDIA_DESB,
+    WIDIA_ACAB,
 
-struct MatEntry{
-    const char* m_name;
+    TOOL_OPER_COUNT,
+};
+TOOL_OPER TOOL_OPER_inc(const TOOL_OPER op);
+
+struct MatEntry
+{
+    const char *m_name;
     const int desbaste_hss;
     const int acabamento_hss;
     const int desbaste_widia;
