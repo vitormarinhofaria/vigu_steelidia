@@ -49,7 +49,7 @@ void loop(void)
 
     if (btn_clicked && !btn_is_hold)
     {
-        select_position = select_position + 1;
+        select_position = InputSelecting_increment(select_position);
         s_selecting = InputSelecting_to_string(select_position);
         switch (select_position)
         {

@@ -14,10 +14,8 @@ enum InputSelecting
 
 SELECT_COUNT
 };
-InputSelecting operator+(InputSelecting& s, int s2);
-InputSelecting operator++(InputSelecting&s);
-InputSelecting operator+=(InputSelecting&s, int i);
 
+InputSelecting InputSelecting_increment(const InputSelecting input);
 const char* InputSelecting_to_string(const InputSelecting input_selecting);
 class Interface
 {
