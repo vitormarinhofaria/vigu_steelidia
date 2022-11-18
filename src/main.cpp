@@ -257,8 +257,8 @@ void loop(void)
         }
 
         { // TOOL OP selection line
-            int height_x = HEIGHT - 2;
-            int height_y = HEIGHT - 2;
+            int height_x = HEIGHT - 1;
+            int height_y = HEIGHT - 1;
             int w_x = (WIDTH / 4) * (g_state.m_tool_operation);
             int w_y = (WIDTH / 4) * (g_state.m_tool_operation + 1);
             u8g.drawLine(w_x, height_x, w_y, height_y);
