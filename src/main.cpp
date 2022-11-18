@@ -60,6 +60,7 @@ void loop(void)
         case InputSelecting::MATERIAL:
         {
             g_state.m_input_manager.set_rotary_val(g_state.m_material);
+            g_state.m_prev_rotary_val = g_state.m_material;
             break;
         }
         default:
