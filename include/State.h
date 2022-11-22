@@ -13,7 +13,8 @@ class State
 public:
     InputManager m_input_manager = InputManager(Button(3), Button(5), Button(7));
     Interface m_interface;
-    RpmReader m_rpm_reader = RpmReader(21, 1);
+    RpmReader m_rpm_reader = RpmReader(18, 1);
+    RpmReader m_rpm_avanco = RpmReader(19, 8);
 
     Button m_btn_stop = Button(41);
     bool m_btn_stop_hold = false;
@@ -25,6 +26,7 @@ public:
     int m_prev_rotary_val = 0;
 
     int m_material = 0;
+    const MatEntry* m_current_material = material_get(m_material);
 
     int m_diameter = 10;
     int m_prev_diameter = m_diameter;
