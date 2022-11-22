@@ -43,67 +43,41 @@ void loop(void)
     {
         g_state.m_select_position = InputSelecting_increment(g_state.m_select_position);
         g_state.m_select_position_text = InputSelecting_to_string(g_state.m_select_position);
-        switch (g_state.m_select_position)
-        {
-        case InputSelecting::DIAMETRO:
-        {
-            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
-            g_state.m_prev_diameter = g_state.m_diameter;
-            break;
-        }
-        case InputSelecting::INCREMENTO:
-        {
-            g_state.m_input_manager.set_rotary_val(g_state.m_increment);
-            g_state.m_prev_increment = g_state.m_increment;
-            break;
-        }
-        case InputSelecting::MATERIAL:
-        {
-            g_state.m_input_manager.set_rotary_val(g_state.m_material);
-            g_state.m_prev_rotary_val = g_state.m_material;
-            break;
-        }
-        default:
-            break;
-        }
-
         g_state.m_btn_hold = true;
     }
     switch (g_state.m_select_position)
     {
     case InputSelecting::DIAMETRO:
     {
-        auto val = g_state.m_input_manager.get_rotary_val();
-        g_state.m_diameter += (val - g_state.m_prev_diameter) * g_state.m_increment;
-        g_state.m_prev_diameter = val;
+        if(g_state.m_input_manager.get_btn_plus()){
+            g_state.m_diameter += g_state.m_increment;
+        }else if(g_state.m_input_manager.get_btn_minus()){
+            g_state.m_diameter -= g_state.m_increment;
+        }
+        
         if (g_state.m_diameter > 350)
         {
             g_state.m_diameter = 350;
-            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
             g_state.m_prev_diameter = g_state.m_diameter;
         }
         else if (g_state.m_diameter < 10)
         {
             g_state.m_diameter = 10;
-            g_state.m_input_manager.set_rotary_val(g_state.m_diameter);
             g_state.m_prev_diameter = g_state.m_diameter;
         }
         break;
     }
     case InputSelecting::INCREMENTO:
     {
-        auto val = g_state.m_input_manager.get_rotary_val();
-        if (val != 0)
+        if (g_state.m_input_manager.get_btn_plus())
         {
-            if (val > g_state.m_prev_increment)
-            {
-                g_state.m_increment *= 10;
-            }
-            else if (val < g_state.m_prev_increment)
-            {
-                g_state.m_increment /= 10;
-            }
+            g_state.m_increment *= 10;
         }
+        else if (g_state.m_input_manager.get_btn_minus())
+        {
+            g_state.m_increment /= 10;
+        }
+
         if (g_state.m_increment <= 0)
         {
             g_state.m_increment = 1;
@@ -112,24 +86,19 @@ void loop(void)
         {
             g_state.m_increment = 100;
         }
-        g_state.m_prev_increment = val;
+
         break;
     }
     case InputSelecting::MATERIAL:
     {
-        auto val = g_state.m_input_manager.get_rotary_val();
-        if (val != 0)
+        if (g_state.m_input_manager.get_btn_plus())
         {
-            if (val > g_state.m_prev_rotary_val)
-            {
-                g_state.m_material = material_inc_indx(g_state.m_material);
-            }
-            else if (val < g_state.m_prev_rotary_val)
-            {
-                g_state.m_material = material_dec_indx(g_state.m_material);
-            }
+            g_state.m_material = material_inc_indx(g_state.m_material);
         }
-        g_state.m_prev_rotary_val = val;
+        else if (g_state.m_input_manager.get_btn_minus())
+        {
+            g_state.m_material = material_dec_indx(g_state.m_material);
+        }
         break;
     }
     default:

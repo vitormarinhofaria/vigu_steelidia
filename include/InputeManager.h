@@ -5,21 +5,22 @@
 class InputManager
 {
 public:
-    InputManager(RotaryEncoder encoder, int encoder_increment, Button button);
-    int32_t get_rotary_val();
-    void set_rotary_val(int32_t value);
-    void set_rotary_increment(int value);
+    InputManager(Button btn_click, Button btn_plus, Button btn_minus);
     bool get_btn_clicked();
+    bool get_btn_plus();
+    bool get_btn_minus();
     void update();
 
 private:
-    RotaryEncoder m_encoder;
-    Button m_button;
+    Button m_btn_click;
+    Button m_btn_plus;
+    Button m_btn_minus;
 
     bool m_btn_clicked = false;
+    
+    bool m_btn_plus_clicked = false;
+    bool m_btn_plus_hold = false;
 
-    int32_t m_rotary_val = 0;
-    int32_t m_rotary_step = 1;
-    int32_t m_rotary_step_inc = 0;
-    int32_t m_rotary_step_dec = 0;
+    bool m_btn_minus_clicked = false;
+    bool m_btn_minus_hold = false;
 };
