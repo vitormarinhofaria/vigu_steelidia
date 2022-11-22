@@ -24,13 +24,13 @@ struct MatEntry
     const int desbaste_widia;
     const int acabamento_widia;
 
-    const int CalculateRpmDesbasteHss(float rpm, int diameter);
-    const int CalculateRpmAcabamentoHss(float rpm, int diameter);
+    int CalculateRpmDesbasteHss(float rpm, int diameter) const;
+    int CalculateRpmAcabamentoHss(float rpm, int diameter) const;
 
-    const int CalculateRpmDesbasteWidia(float rpm, int diameter);
-    const int CalculateRpmAcabamentoWidia(float rpm, int diameter);
+    int CalculateRpmDesbasteWidia(float rpm, int diameter) const;
+    int CalculateRpmAcabamentoWidia(float rpm, int diameter) const;
 };
 
-MatEntry material_get(int index);
+const MatEntry* material_get(size_t index);
 int material_inc_indx(int index);
 int material_dec_indx(int index);
