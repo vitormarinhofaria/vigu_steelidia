@@ -2,7 +2,7 @@
 #include "Input.h"
 
 InputManager::InputManager(Button btn_click, Button btn_plus, Button btn_minus)
-    : m_btn_click(btn_click), m_btn_minus(btn_minus), m_btn_plus(btn_plus)
+    : m_btn_click(btn_click), m_btn_plus(btn_plus), m_btn_minus(btn_minus)
 {
 }
 
