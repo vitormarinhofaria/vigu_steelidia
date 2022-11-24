@@ -13,8 +13,8 @@ class State
 public:
     InputManager m_input_manager = InputManager(Button(3), Button(5), Button(7));
     Interface m_interface;
-    RpmReader m_rpm_reader = RpmReader(18, 1);
-    RpmReader m_rpm_avanco = RpmReader(19, 8);
+    RpmReader m_rpm_reader = RpmReader(20, 1);
+    RpmReader m_rpm_avanco = RpmReader(21, 8);
 
     Button m_btn_stop = Button(41);
     bool m_btn_stop_hold = false;
