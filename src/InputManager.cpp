@@ -40,7 +40,19 @@ bool InputManager::get_btn_plus()
 {
     return m_btn_plus_clicked;
 }
+bool InputManager::get_btn_plus_click_only(){
+    return m_btn_plus_clicked && !m_btn_plus_hold;
+}
+bool InputManager::get_btn_plus_hold(){
+    return m_btn_plus_hold;
+}
 bool InputManager::get_btn_minus()
 {
     return m_btn_minus_clicked;
+}
+bool InputManager::get_btn_minus_click_only(){
+    return m_btn_minus_clicked && !m_btn_minus_hold;
+}
+bool InputManager::get_btn_minus_hold(){
+    return m_btn_minus_hold;
 }

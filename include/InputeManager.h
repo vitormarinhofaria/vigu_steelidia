@@ -8,7 +8,11 @@ public:
     InputManager(Button btn_click, Button btn_plus, Button btn_minus);
     bool get_btn_clicked();
     bool get_btn_plus();
+    bool get_btn_plus_click_only();
+    bool get_btn_plus_hold();
     bool get_btn_minus();
+    bool get_btn_minus_click_only();
+    bool get_btn_minus_hold();
     void update();
 
 private:

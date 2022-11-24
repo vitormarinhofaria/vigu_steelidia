@@ -30,6 +30,7 @@ void setup(void)
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
 #endif
+    Serial.write("Initialized\n");
 }
 
 void loop(void)
@@ -37,7 +38,6 @@ void loop(void)
     // atualizar input
     g_state.m_input_manager.update();
     bool btn_clicked = g_state.m_input_manager.get_btn_clicked();
-    digitalWrite(13, btn_clicked);
 
     if (btn_clicked && !g_state.m_btn_hold)
     {
@@ -49,11 +49,11 @@ void loop(void)
     {
     case InputSelecting::DIAMETRO:
     {
-        if (g_state.m_input_manager.get_btn_plus())
+        if (g_state.m_input_manager.get_btn_plus_click_only())
         {
             g_state.m_diameter += g_state.m_increment;
         }
-        else if (g_state.m_input_manager.get_btn_minus())
+        else if (g_state.m_input_manager.get_btn_minus_click_only())
         {
             g_state.m_diameter -= g_state.m_increment;
         }
@@ -72,11 +72,11 @@ void loop(void)
     }
     case InputSelecting::INCREMENTO:
     {
-        if (g_state.m_input_manager.get_btn_plus())
+        if (g_state.m_input_manager.get_btn_plus_click_only())
         {
             g_state.m_increment *= 10;
         }
-        else if (g_state.m_input_manager.get_btn_minus())
+        else if (g_state.m_input_manager.get_btn_minus_click_only())
         {
             g_state.m_increment /= 10;
         }
@@ -94,12 +94,12 @@ void loop(void)
     }
     case InputSelecting::MATERIAL:
     {
-        if (g_state.m_input_manager.get_btn_plus())
+        if (g_state.m_input_manager.get_btn_plus_click_only())
         {
             g_state.m_material = material_inc_indx(g_state.m_material);
             g_state.m_current_material = material_get(g_state.m_material);
         }
-        else if (g_state.m_input_manager.get_btn_minus())
+        else if (g_state.m_input_manager.get_btn_minus_click_only())
         {
             g_state.m_material = material_dec_indx(g_state.m_material);
             g_state.m_current_material = material_get(g_state.m_material);
