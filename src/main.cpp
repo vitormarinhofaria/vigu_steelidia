@@ -49,11 +49,11 @@ void loop(void)
     {
     case InputSelecting::DIAMETRO:
     {
-        if (g_state.m_input_manager.get_btn_plus_click_only())
+        if (g_state.m_input_manager.get_btn_plus())
         {
             g_state.m_diameter += g_state.m_increment;
         }
-        else if (g_state.m_input_manager.get_btn_minus_click_only())
+        else if (g_state.m_input_manager.get_btn_minus())
         {
             g_state.m_diameter -= g_state.m_increment;
         }
@@ -72,11 +72,11 @@ void loop(void)
     }
     case InputSelecting::INCREMENTO:
     {
-        if (g_state.m_input_manager.get_btn_plus_click_only())
+        if (g_state.m_input_manager.get_btn_plus())
         {
             g_state.m_increment *= 10;
         }
-        else if (g_state.m_input_manager.get_btn_minus_click_only())
+        else if (g_state.m_input_manager.get_btn_minus())
         {
             g_state.m_increment /= 10;
         }
@@ -94,12 +94,12 @@ void loop(void)
     }
     case InputSelecting::MATERIAL:
     {
-        if (g_state.m_input_manager.get_btn_plus_click_only())
+        if (g_state.m_input_manager.get_btn_plus())
         {
             g_state.m_material = material_inc_indx(g_state.m_material);
             g_state.m_current_material = material_get(g_state.m_material);
         }
-        else if (g_state.m_input_manager.get_btn_minus_click_only())
+        else if (g_state.m_input_manager.get_btn_minus())
         {
             g_state.m_material = material_dec_indx(g_state.m_material);
             g_state.m_current_material = material_get(g_state.m_material);
