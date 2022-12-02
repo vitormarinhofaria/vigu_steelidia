@@ -25,7 +25,7 @@ static int interrupt_count = 0;
 static void rpm_interrupt_0()
 {
     detachInterrupt(g_rpm_readers[0]->m_rpm_counter_pin);
-    String s = String("Interrupt 0\t Count: " + String(interrupt_count));
+    String s = String("Interrupt 0\t Count: " + String(interrupt_count) + "\n");
     Serial.write(s.c_str());
     interrupt_count++;
     rpm_reader_interrupt(g_rpm_readers[0]);
@@ -33,9 +33,8 @@ static void rpm_interrupt_0()
 }
 static void rpm_interrupt_1()
 {
-    
     detachInterrupt(g_rpm_readers[1]->m_rpm_counter_pin);
-    String s = String("Interrupt 0\t Count: " + String(interrupt_count));
+    String s = String("Interrupt 1\t Count: " + String(interrupt_count) + "\n");
     Serial.write(s.c_str());
     interrupt_count++;
     rpm_reader_interrupt(g_rpm_readers[1]);
